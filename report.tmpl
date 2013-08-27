@@ -1,10 +1,82 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Montage project report</title>
+    <style type="text/css">
+    /* Adapted from bootstrap */
+    html {
+      font-family: sans-serif;
+      -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+    table {
+        width: 100%;
+        background-color: transparent;
+        margin-bottom: 20px;
+    }
+
+    th {
+      text-align: left;
+    }
+
+
+    thead > tr > th,
+    tbody > tr > th,
+    tfoot > tr > th,
+    thead > tr > td,
+    tbody > tr > td,
+    tfoot > tr > td {
+      padding: 8px;
+      line-height: 1.428571429;
+      vertical-align: top;
+      border-top: 1px solid #dddddd;
+    }
+
+    thead > tr > th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #dddddd;
+    }
+
+    caption + thead tr:first-child th,
+    colgroup + thead tr:first-child th,
+    thead:first-child tr:first-child th,
+    caption + thead tr:first-child td,
+    colgroup + thead tr:first-child td,
+    thead:first-child tr:first-child td {
+      border-top: 0;
+    }
+
+    tbody + tbody {
+      border-top: 2px solid #dddddd;
+    }
+
+    .commitMessage {
+        white-space: pre-wrap;
+        font-family: monospace;
+    }
+    </style>
 </head>
 <body>
     {{#repos}}
-        {{name}}
+        <h1>{{name}}<h1>
+        <h2>Commits ({{commits.length}})</h2>
+        <table>
+            <tr><th>Commit message</th><th>Author</th></tr>
+            {{#commits}}
+            <tr>
+                <td class="commitMessage"><a href="https://github.com/montagejs/{{name}}/commit/{{sha}}">{{commit.message}}</a></td>
+                <td>{{author.login}}</td>
+            {{/commits}}
+        </table>
     {{/repos}}
 </body>
 </html>
