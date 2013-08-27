@@ -70,9 +70,14 @@
         <h1>{{name}}<h1>
         <h2>Commits ({{commits.length}})</h2>
         <table>
-            <tr><th>Commit message</th><th>Author</th></tr>
+            <tr>
+                <th>Noted</th>
+                <th>Commit message</th>
+                <th>Author</th>
+            </tr>
             {{#commits}}
             <tr>
+                <td><input type="checkbox"></td>
                 <td class="commitMessage"><a href="https://github.com/montagejs/{{name}}/commit/{{sha}}">{{commit.message}}</a></td>
                 <td>{{author.login}}</td>
             {{/commits}}
