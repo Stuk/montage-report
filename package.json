@@ -1,0 +1,17 @@
+{
+  "name": "montage-report",
+  "version": "0.0.0",
+  "description": "Generate an activity report for the Montage project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Stuart Knightley <stuart@stuartk.com>",
+  "license": "BSD",
+  "dependencies": {
+    "github": "~0.1.10",
+    "q": "~0.9.6",
+    "mustache": "~0.7.2"
+  }
+}
