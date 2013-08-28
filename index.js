@@ -24,25 +24,51 @@ var github = new GitHubApi({
 console.log("Loading repos...");
 Q.ninvoke(github.repos, "getFromUser", {user: "montagejs", per_page: 100})
 .then(function (repos) {
-    var repos = repos.filter(function (repo) {
+    // Filter to get ones with activity in the past week
+    repos = repos.filter(function (repo) {
         return new Date(repo.updated_at) > LAST_WEEK;
-    }).sort(function (a, b) {
-        return b.watchers - a.watchers;
     });
 
-    console.log("Loading commits for", repos.length, "repos...");
+    console.log("Loading commits and PRs for", repos.length, "repos...");
     return Q.all(repos.map(function (repo) {
-        return Q.ninvoke(github.repos, "getCommits", {
-            user: "montagejs",
-            repo: repo.name,
-            since: LAST_WEEK
-        });
+        return Q.all([
+            Q.ninvoke(github.repos, "getCommits", {
+                user: "montagejs",
+                repo: repo.name,
+                since: LAST_WEEK
+            }),
+            Q.ninvoke(github.pullRequests, "getAll", {
+                user: "montagejs",
+                repo: repo.name,
+                state: "closed",
+                per_page: 100
+            })
+            .then(function (pulls) {
+                return pulls.filter(function (pull) {
+                    return pull.merged_at && new Date(pull.merged_at) > LAST_WEEK;
+                });
+            })
+        ]);
     }))
-    .then(function (reposCommits) {
+    .then(function (reposCommitsPulls) {
+        console.log("Filtering commits in pull requests...")
         for (var i = 0; i < repos.length; i++) {
-            repos[i].commits = reposCommits[i];
+            var commits = reposCommitsPulls[i][0];
+            var pulls = reposCommitsPulls[i][1];
+
+            pulls.forEach(function (pull) {
+                markCommitsInPull(commits, pull);
+            });
+
+            repos[i].commits = commits.filter(function (commit) {
+                return !commit.pullRequest && commit.commit.message.search(/^Merge pull request/) === -1;
+            });
+            repos[i].pulls = reposCommitsPulls[i][1];
         }
-        return repos;
+        // Sort in decending order of the number of pulls
+        return repos.sort(function (a, b) {
+            return b.pulls.length - a.pulls.length;
+        });
     });
 })
 .then(function (repos) {
@@ -52,3 +78,25 @@ Q.ninvoke(github.repos, "getFromUser", {user: "montagejs", per_page: 100})
 })
 .done();
 
+function markCommitsInPull(commits, pull) {
+    var parentSha = pull.head.sha;
+    var baseSha = pull.base.sha;
+
+    var shaIndexMap = {};
+    commits.forEach(function (commit, index) {
+        shaIndexMap[commit.sha] = index;
+    });
+
+    pull.commits = [];
+
+    while(shaIndexMap[parentSha] && parentSha !== baseSha) {
+        var commit = commits[shaIndexMap[parentSha]];
+        commit.pullRequest = pull;
+        pull.commits.push(commit);
+        if (commit.parents.length > 1) {
+            break;
+        }
+        parentSha = commit.parents[0].sha;
+    }
+    return commits;
+}
