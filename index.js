@@ -51,7 +51,7 @@ Q.ninvoke(github.repos, "getFromUser", {user: "montagejs", per_page: 100})
         ]);
     }))
     .then(function (reposCommitsPulls) {
-        console.log("Filtering commits in pull requests...")
+        console.log("Filtering commits in pull requests...");
         for (var i = 0; i < repos.length; i++) {
             var commits = reposCommitsPulls[i][0];
             var pulls = reposCommitsPulls[i][1];
