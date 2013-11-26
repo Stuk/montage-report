@@ -69,6 +69,11 @@
     {{#repos}}
         <h1><a href="{{html_url}}">{{name}}</a><h1>
         <h2>Merged pull requests ({{pulls.length}})</h2>
+
+        {{#pulls}}
+        <pre><code>[{{title}}]({{html_url}})</code></pre>
+        {{/pulls}}
+
         {{#pulls}}
         <h3><a href="{{html_url}}">{{title}}</a></h3>
         <table>
