@@ -76,6 +76,12 @@ Q.ninvoke(github.repos, "getFromUser", {user: "montagejs", per_page: 100})
     var report = TEMPLATE({repos: repos});
     FS.writeFileSync("report.html", report);
 })
+.catch(function (error) {
+    if (error.message.indexOf("API rate limit exceeded") !== -1) {
+        throw new Error("Github API rate limit exceeded. Uncomment authentication code and add a username and password to increase the limit");
+    }
+    throw error;
+})
 .done();
 
 function markCommitsInPull(commits, pull) {
