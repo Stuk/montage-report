@@ -72,7 +72,7 @@ Q.ninvoke(github.repos, "getFromUser", {user: "montagejs", per_page: 100})
     });
 })
 .then(function (repos) {
-    console.log("Generating report...");
+    console.log("Generating report.html ...");
     var report = TEMPLATE({repos: repos});
     FS.writeFileSync("report.html", report);
 })
