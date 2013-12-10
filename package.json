@@ -1,5 +1,6 @@
 {
   "name": "montage-report",
+  "private": true,
   "version": "0.0.0",
   "description": "Generate an activity report for the Montage project",
   "main": "index.js",
